@@ -10,12 +10,33 @@ of results. This predicament leads to a biased representation of
 the data graph. In this paper, we study the problem of diversity in
 subgraph matching and propose an algorithm that quickly returns
 results that are representative of the whole data graph.
+## **Code**
+We build our algorithm using SIGMOD'2024 paper A Comprehensive Survey and Experimental Study of Subgraph Matching: Trends, Unbiasedness by Dr. Shixuan 
+We kept all the functionalities of the framework and for more specific details we refer to [Code](https://github.com/RapidsAtHKUST/SubgraphMatching).
 ## General Information
-The algorithms are built as an extension of survey[1].
+We alter the supported algorighms (enumeration method) to return coverage results.
+
+## Supported Algorithms
+|Algorithm|Description|Execution code
+|:--------:|:------------:|:------------:
+|M&M | Mix & Match | MM
+|M&M-I | Mix & Match with Initialization | MMI
+|DSQL | Diversified Subgraph Query | DSQL
+|DSQL+ | Optimized Diversified Subgraph Query | DSQLP
+|VEQ | Versatile Equivalences | VEQ
+|LFTJ | the set-intersection based local candidates computation | LFTJ
+|RM | Rapid-Match | RM
+## Supported Algorithms-TOPK
+|Algorithm|Description|Execution code
+|:--------:|:------------:|:------------:
+|M&M | Mix & Match | MMK
+|M&M-I | Mix & Match with Initialization | MMIK
+|DSQL | Diversified Subgraph Query | DSQLK
+|DSQL+ | Optimized Diversified Subgraph Query | DSQLPK
+|LFTJ | the set-intersection based local candidates computation | LFTJK
+
 ## build
-
-Within the `vlabel` or `elabel` directory, create a build directory and compile the source code.
-
+Within the `vlabel` directory, create a build directory and compile the source code.
 ```zsh
 mkdir build & cd build
 cmake ..
