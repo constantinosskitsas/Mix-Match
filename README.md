@@ -86,6 +86,10 @@ For detailed parameter settings, see `matching/matchingcommand.h`.
 ./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter RM -order RM -engine RM -num -1 -symmetry 1 -time 1 -SF Coverage
 ```
 
-> [1] Zhijie Zhang, Yujie Lu, Weiguo Zheng, and Xuemin Lin. 2024. A Comprehensive Survey and Experimental Study of Subgraph Matching: Trends, Unbiasedness, and Interaction. Proc. ACM Manag. Data 2, 1, Article 60 (February 2024), 29 pages.
-> 
-> [2] Shixuan Sun and Qiong Luo. 2020. In-Memory Subgraph Matching: An In-depth Study. In Proceedings of the 2020 ACM SIGMOD International Conference on Management of Data (SIGMOD '20). Association for Computing Machinery, New York, NY, USA, 1083–1098.
+## Reference
+
+Please cite our work in your publications if it helps your research:
+
+```
+Paper under submission
+```
