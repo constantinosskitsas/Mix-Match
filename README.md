@@ -11,7 +11,7 @@ the data graph. In this paper, we study the problem of diversity in
 subgraph matching and propose an algorithm that quickly returns
 results that are representative of the whole data graph.
 ## **Code**
-We build our algorithm using SIGMOD'2024 paper A Comprehensive Survey and Experimental Study of Subgraph Matching: Trends, Unbiasedness by Dr. Shixuan 
+We build our algorithm using SIGMOD'2024 paper [A Comprehensive Survey and Experimental Study of Subgraph Matching: Trends, Unbiasedness and Interaction](https://dl.acm.org/doi/pdf/10.1145/3639315) 
 We kept all the functionalities of the framework and for more specific details we refer to [Code](https://github.com/RapidsAtHKUST/SubgraphMatching).
 ## General Information
 We alter the supported algorighms (enumeration method) to return coverage results.
@@ -54,32 +54,37 @@ make
 ## Execute
 
 Execute the binary with the following command.
-
+./SubgraphMatching.out -dataset dblp -qsize 16 -qnumber 1 -qnumberL 1 -qprop G -order CFL -filter VEQ -engine MM  -SF DIV-BASIC -time 1 -FairT 0 -symmetry 1
 ```zsh
-./SubgraphMatching.out -d data_graphs -q query_graphs
--filter method_of_filtering_candidate_vertices -order method_of_ordering_query_vertices -engine method_of_enumerating_partial_results -num number_of_embeddings,
+./SubgraphMatching.out -dataset data_graphs -qsize query size
+-filter method_of_filtering_candidate_vertices -order method_of_ordering_query_vertices -engine method_of_enumerating_partial_results -FairT global diversity method, -symmetry authomorphisms -SF save file name -time Time limit
 ```
 
 For detailed parameter settings, see `matching/matchingcommand.h`.
 
-**Example 1**: This approach uses the filtering and ordering methods of GraphQL to generate candidate vertex sets and determine the matching order. Results are enumerated using the set-intersection-based local candidate computation method.
-
-
-```zsh
-./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter VEQ -order VEQ -engine MM -num -1 -symmetry 1 -FairT 2 -time 1 -SF saveM
-```
-
-**Example2**: (Use the filtering method CaLiG to generate the candidate vertex sets, ordering method of RI to generate the matching order,  KSS engine to enumerate the results with automorphic graphs detection):
+**Example 1**: MM experiment setup for 1 sec time limit.
 
 ```zsh
-./SubgraphMatching.out -dataset dblp -qsize 16 -qnumber 1 -qnumberL 10 -qprop G -SF magkas -FairT 2 -filter GQL -order GQL -engine LFTJ -num 10 -symmetry 1 -time 1
+./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter VEQ -order CFL -engine MM -num -1 -symmetry 1 -FairT 2 -time 1 -SF Coverage
 ```
-
+**Example 2**: VEQ experiment setup.
 
 ```zsh
-./SubgraphMatching.out -d ../../test/sample_dataset/test_case_1.graph -q ../../test/sample_dataset/query1_positive.graph -filter CaLiG -order RI -engine KSS -num MAX -symmetry 1
+./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter VEQ -order VEQ -engine VEQ -num -1 -symmetry 1 -FairT 2 -time 1 -SF Coverage
 ```
 
+
+**Example 3**: LFTJ experiment setup.
+
+```zsh
+./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter VEQ -order CFL -engine LFTJ -num -1 -symmetry 1 -time 1 -SF Coverage
+```
+
+**Example 4**: RM experiment setup.
+
+```zsh
+./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter RM -order RM -engine RM -num -1 -symmetry 1 -time 1 -SF Coverage
+```
 
 > [1] Zhijie Zhang, Yujie Lu, Weiguo Zheng, and Xuemin Lin. 2024. A Comprehensive Survey and Experimental Study of Subgraph Matching: Trends, Unbiasedness, and Interaction. Proc. ACM Manag. Data 2, 1, Article 60 (February 2024), 29 pages.
 > 
