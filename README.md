@@ -1,35 +1,17 @@
-
-## file structure
-
-Within the directory, there are four folders here, including the two code branches of `vlabel` and `elabel`.
-
-```
-├─ automorphism       // Subgraph matching with automorphic graph detection
-│  ├─ configuration   // Basic data structure & macro definitions
-│  ├─ graph           // Graph structure
-│  ├─ matching        // Core code: methods implementation (filter, order, engine)
-│  ├─ test*           // Tests for source code correctness
-│  └─ utility         // Supporting utilities for code execution
-├─ elabel             // Support for edge-labeled graphs in subgraph matching
-│  ├─ configuration   // Basic data structure & macro definitions
-│  ├─ graph           // Graph structure
-│  ├─ matching        // Core code: methods implementation (filter, order, engine)
-│  ├─ elabel_test*    // Tests for source code correctness
-│  └─ utility         // Supporting utilities for code execution
-```
-
-### `vlabel` Directory
-
-The `vlabel` directory contains the foundational implementation for all evaluated algorithms, focusing on vertex-labeled undirected graphs, and provides the feature for  automorphic graphs (generating at most one result for one automorphism group), which can be activated using the `-symmetry 1` parameter.
-
-### `elabel` Directory
-
-The `elabel` directory supports edge-labeled graphs with the same algorithms. To enable this feature, we incorporate the `ELABELED_GRAPH` macro definition as a switch within the configuration.
-
-### Upcoming Merge
-
-In the future, the `vlabel` and `elabel` branches will be merged to unify their functionalities. 
-
+# Mix & Match: Subgraph Matching for Absolute Coverage
+The NP-hard problem ofsubgraph matching calls to return all matchings of a smaller query graph within a larger data graph. The problem is fundamental in graph analysis and query answering, as identifying the location of all matchings facilitates the understanding
+and analysis of the larger graph. Nevertheless, existing subgraph
+matching methods return results from one location of the graph
+before moving to another location, while the total results may be
+in the order of billions or even trillions; under these circumstances,
+existing methods may only present a portion of the results within
+reasonable time or space, which is not representative of the totality
+of results. This predicament leads to a biased representation of
+the data graph. In this paper, we study the problem of diversity in
+subgraph matching and propose an algorithm that quickly returns
+results that are representative of the whole data graph.
+## General Information
+The algorithms are built as an extension of survey[1].
 ## build
 
 Within the `vlabel` or `elabel` directory, create a build directory and compile the source code.

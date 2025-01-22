@@ -404,20 +404,20 @@ if (enable_symmetry) {
                                               matching_order, output_limit, call_count, valid_vtx_count,TimeL1,FairT,
                                               ordered_constraints);
                                               }                                          
-    else if (input_engine_type == "LFTJDLS") {  
+    else if (input_engine_type == "DSQLP") {  
         
         s = EvaluateQuery::LFTJDLS(data_graph, query_graph, nodeID,edge_matrix, candidates, candidates_count,
                                               matching_order, output_limit, call_count, valid_vtx_count,TimeL1,FairT,
                                               ordered_constraints);
     }
-        else if (input_engine_type == "DLSBS") {  
+        else if (input_engine_type == "DSQL") {  
         
 
         s = EvaluateQuery::DSQL(data_graph, query_graph, nodeID,edge_matrix, candidates, candidates_count,
                                               matching_order, output_limit, call_count, valid_vtx_count,TimeL1,FairT,
                                               ordered_constraints);
     }
-    else if (input_engine_type == "DLSBSK") {  
+    else if (input_engine_type == "DSQLK") {  
         
 
         s = EvaluateQuery::DSQLTOPK(data_graph, query_graph, nodeID,edge_matrix, candidates, candidates_count,
@@ -426,7 +426,7 @@ if (enable_symmetry) {
     }
     
     
-        else if (input_engine_type == "LFSK") {  
+        else if (input_engine_type == "DSQLPK") {  
         
         s = EvaluateQuery::LFTJDLSKOPT(data_graph, query_graph, nodeID,edge_matrix, candidates, candidates_count,
                                               matching_order, output_limit, call_count, valid_vtx_count,TimeL1,FairT,
@@ -471,7 +471,7 @@ if (enable_symmetry) {
           //                                                 edge_matrix, candidates, candidates_count,
           //                                                 output_limit, call_count,TimeL1, full_constraints);
     }
-        else if (input_engine_type == "DV") {  
+        else if (input_engine_type == "MM") {  
         //if (veq_tree == NULL) {
         //    GenerateFilteringPlan::generateDPisoFilterPlan(data_graph, query_graph, veq_tree, veq_order);        
         //}
@@ -479,7 +479,7 @@ if (enable_symmetry) {
                                                            output_limit, call_count,TimeL1,FairT, ordered_constraints);
         //s = EvaluateQuery::LFTJDIV1(data_graph, query_graph,edge_matrix, candidates, candidates_count,matching_order,
         //                                                   output_limit, call_count,TimeL1,FairT, ordered_constraints);
-    }else if (input_engine_type == "DVS") {  
+    }else if (input_engine_type == "MMI") {  
         //if (veq_tree == NULL) {
         //    GenerateFilteringPlan::generateDPisoFilterPlan(data_graph, query_graph, veq_tree, veq_order);        
         //}
@@ -489,7 +489,7 @@ if (enable_symmetry) {
         //                                                   output_limit, call_count,TimeL1,FairT, ordered_constraints);
     }
 
-            else if (input_engine_type == "DVGM") {  
+            else if (input_engine_type == "MMK") {  
         //if (veq_tree == NULL) {
         //    GenerateFilteringPlan::generateDPisoFilterPlan(data_graph, query_graph, veq_tree, veq_order);
         
@@ -500,7 +500,7 @@ if (enable_symmetry) {
         //s = EvaluateQuery::LFTJDIV1(data_graph, query_graph,edge_matrix, candidates, candidates_count,matching_order,
         //                                                   output_limit, call_count,TimeL1,FairT, ordered_constraints);
     }
-            else if (input_engine_type == "DVGMSQ") {  
+            else if (input_engine_type == "MMIK") {  
         //if (veq_tree == NULL) {
         //    GenerateFilteringPlan::generateDPisoFilterPlan(data_graph, query_graph, veq_tree, veq_order);
         
