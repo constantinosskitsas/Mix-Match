@@ -34,7 +34,15 @@ We alter the supported algorighms (enumeration method) to return coverage result
 |DSQL | Diversified Subgraph Query | DSQLK
 |DSQL+ | Optimized Diversified Subgraph Query | DSQLPK
 |LFTJ | the set-intersection based local candidates computation | LFTJK
-
+## Global Exploration
+Only for M&M algorithm
+|Algorithm|Description|Execution code
+|:--------:|:------------:|:------------:
+|- | none | 0
+|U | Uncovered | 1
+|mN | Minimum covered Neighbors | 2
+|MN | Maximum uncovered Neighbors (𝑀𝑁) | 3
+|HN | Hybrid | 4
 ## build
 Within the `vlabel` directory, create a build directory and compile the source code.
 ```zsh
@@ -45,8 +53,6 @@ make
 
 ## Execute
 
-Take `vlabel` directory as an example.
-After compiling the source code, you can find the binary file `SubgraphMatching.out` under the `build/matching` directory.
 Execute the binary with the following command.
 
 ```zsh
@@ -60,7 +66,7 @@ For detailed parameter settings, see `matching/matchingcommand.h`.
 
 
 ```zsh
-./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_267.graph -filter GQL -order GQL -engine LFTJ -num 1000 -symmetry 1 -FairT 2 -time 1 -SF saveM
+./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter VEQ -order VEQ -engine MM -num -1 -symmetry 1 -FairT 2 -time 1 -SF saveM
 ```
 
 **Example2**: (Use the filtering method CaLiG to generate the candidate vertex sets, ordering method of RI to generate the matching order,  KSS engine to enumerate the results with automorphic graphs detection):
