@@ -1,15 +1,27 @@
 # Mix & Match: Subgraph Matching for Absolute Coverage
-The NP-hard problem ofsubgraph matching calls to return all matchings of a smaller query graph within a larger data graph. The problem is fundamental in graph analysis and query answering, as identifying the location of all matchings facilitates the understanding
-and analysis of the larger graph. Nevertheless, existing subgraph
-matching methods return results from one location of the graph
-before moving to another location, while the total results may be
-in the order of billions or even trillions; under these circumstances,
-existing methods may only present a portion of the results within
-reasonable time or space, which is not representative of the totality
-of results. This predicament leads to a biased representation of
-the data graph. In this paper, we study the problem of diversity in
-subgraph matching and propose an algorithm that quickly returns
-results that are representative of the whole data graph.
+## The paper is accepted to 52nd International Conference on Very Large Data Bases [VLDB'26]. A version of the paper exist in this github repository.
+The NP-hard problem of subgraph matching calls to detect all matchings
+of a smaller query graph within a larger data graph. The problem
+is fundamental in graph analysis and query answering, as it
+facilitates the understanding and analysis of the larger graph. Nevertheless,
+existing subgraph matching methods return results from
+one location of the graph before moving to another location, while
+the total results may be in the order of billions or even trillions;
+under these circumstances, existing methods may only present
+a portion of the results within reasonable time or space, which
+is not representative of the totality of results. This predicament
+leads to a biased representation of the data graph. In this paper, we
+study the problem of coverage in subgraph matching and propose
+Mix & Match (M&M) an algorithm that quickly returns results
+that are representative of the whole data graph. M&M achieves
+higher coverage employing a combination of global exploration,
+which prioritizes the exploration of nodes at the first level of backtracking
+that may enlarge coverage, and local exploration, which
+improves backtracking efficiency by pruning exploration paths that
+do not increase coverage. Our experimental study shows that M&M
+finds on average twice as many unique nodes as state-of-the-art
+algorithms in the same time.
+
 ## **Code**
 We build our algorithm using SIGMOD'2024 paper [A Comprehensive Survey and Experimental Study of Subgraph Matching: Trends, Unbiasedness and Interaction](https://dl.acm.org/doi/pdf/10.1145/3639315) 
 We kept all the functionalities of the framework and for more specific details we refer to [Code](https://github.com/RapidsAtHKUST/SubgraphMatching).
@@ -89,7 +101,6 @@ For detailed parameter settings, see `matching/matchingcommand.h`.
 ## Reference
 
 Please cite our work in your publications if it helps your research:
-The paper is accepted to 52nd International Conference on Very Large Data Bases [VLDB'26]
 ```
 
 ```
