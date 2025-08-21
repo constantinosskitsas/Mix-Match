@@ -10,7 +10,7 @@ the total results may be in the order of billions or even trillions;
 under these circumstances, existing methods may only present
 a portion of the results within reasonable time or space, which
 is not representative of the totality of results. This predicament
-leads to a biased representation of the data graph. In this paper, we
+leads to a biased representation of the data graph. In this [paper](https://github.com/constantinosskitsas/Mix-Match/blob/master/m_n_m_CR.pdf), we
 study the problem of coverage in subgraph matching and propose
 Mix & Match (M&M) an algorithm that quickly returns results
 that are representative of the whole data graph. M&M achieves
