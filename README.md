@@ -1,5 +1,5 @@
 # Mix & Match: Subgraph Matching for Absolute Coverage 
-## [accepted to PVLDB]
+### [accepted to PVLDB]
 The NP-hard problem of subgraph matching calls to detect all matchings
 of a smaller query graph within a larger data graph. The problem
 is fundamental in graph analysis and query answering, as it
