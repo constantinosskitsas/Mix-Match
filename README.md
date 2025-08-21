@@ -89,7 +89,7 @@ For detailed parameter settings, see `matching/matchingcommand.h`.
 ## Reference
 
 Please cite our work in your publications if it helps your research:
-
+The paper is accepted to 52nd International Conference on Very Large Data Bases [VLDB'26]
 ```
-Paper under submission
+
 ```
