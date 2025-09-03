@@ -74,10 +74,13 @@ Execute the binary with the following command.
 
 For detailed parameter settings, see `matching/matchingcommand.h`.
 
-**Example 1**: MM experiment setup for 1 sec time limit.
+**Example 1**: MM and MMI experiment setup for 1 sec time limit.
 
 ```zsh
 ./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter VEQ -order CFL -engine MM -num -1 -symmetry 1 -FairT 2 -time 1 -SF Coverage
+```
+```zsh
+./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter VEQ -order CFL -engine MMI -num -1 -symmetry 1 -time 1 -SF Coverage
 ```
 **Example 2**: VEQ experiment setup.
 
