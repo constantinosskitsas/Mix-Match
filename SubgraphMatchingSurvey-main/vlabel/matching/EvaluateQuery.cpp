@@ -9370,10 +9370,7 @@ EvaluateQuery::DIVSMSQ(const Graph *data_graph, const Graph *query_graph,ui *&no
     int countSol=0;
     for (int i=0;i<data_graph->getVerticesCount();i++){
         countSol+=nodeId[i];
-        if(nodeId[i]==1){
-            cout<<i<<", ";
-        }
-    }cout<<endl;
+    }
     s.Can_embed = countSol;
     s.embedding_cnt = embedding_cnt;
     s.candidate_true_count_sum = true_cand_sum;

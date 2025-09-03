@@ -96,12 +96,10 @@ int main(int argc, char** argv) {
     std::string QN = command.getQueryNumber();
     std::string QNL = command.getQueryNumberL();
     int FairT=stoi(command.getFairT());
-    cout<<"hi"<<endl;
     //int QNLR=stoi(QNL);
     //int QNR=stoi(QN);
     int QNLR=1;
     int QNR=1;
-    cout<<"hi1"<<endl;
     //cout<<QNL<<"QNL"<<endl;
     std::string Dataset = command.getDatasetName();
     cout<<Dataset<<endl;
@@ -136,8 +134,6 @@ int main(int argc, char** argv) {
     auto start = std::chrono::high_resolution_clock::now();
 
     
-    cout<<input_data_graph_file<<endl;
-
     Graph* data_graph = new Graph(true);
 
     if (input_csr_file_path.empty()) {
@@ -489,7 +485,7 @@ if (enable_symmetry) {
                                                            output_limit, call_count,TimeL1,FairT, ordered_constraints);
         //s = EvaluateQuery::LFTJDIV1(data_graph, query_graph,edge_matrix, candidates, candidates_count,matching_order,
         //                                                   output_limit, call_count,TimeL1,FairT, ordered_constraints);
-    }else if (input_engine_type == "MMI") {  
+    }else if (input_engine_type == "MMN") {  
         //if (veq_tree == NULL) {
         //    GenerateFilteringPlan::generateDPisoFilterPlan(data_graph, query_graph, veq_tree, veq_order);        
         //}
@@ -502,7 +498,7 @@ if (enable_symmetry) {
         
         //s = EvaluateQuery::LFTJDIV1(data_graph, query_graph,edge_matrix, candidates, candidates_count,matching_order,
         //                                                   output_limit, call_count,TimeL1,FairT, ordered_constraints);
-    }else if (input_engine_type == "MMN") {  
+    }else if (input_engine_type == "MMI") {  
         //if (veq_tree == NULL) {
         //    GenerateFilteringPlan::generateDPisoFilterPlan(data_graph, query_graph, veq_tree, veq_order);        
         //}
