@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchi
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,6 +111,51 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+matching/CMakeFiles/SelectEdge.dir/rule:
+	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/SelectEdge.dir/rule
+.PHONY : matching/CMakeFiles/SelectEdge.dir/rule
+
+# Convenience name for target.
+SelectEdge: matching/CMakeFiles/SelectEdge.dir/rule
+
+.PHONY : SelectEdge
+
+# fast build rule for target.
+SelectEdge/fast:
+	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/build
+.PHONY : SelectEdge/fast
+
+# Convenience name for target.
+matching/CMakeFiles/ReassignLabel.dir/rule:
+	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/ReassignLabel.dir/rule
+.PHONY : matching/CMakeFiles/ReassignLabel.dir/rule
+
+# Convenience name for target.
+ReassignLabel: matching/CMakeFiles/ReassignLabel.dir/rule
+
+.PHONY : ReassignLabel
+
+# fast build rule for target.
+ReassignLabel/fast:
+	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/build
+.PHONY : ReassignLabel/fast
+
+# Convenience name for target.
+matching/CMakeFiles/EdgeListConverter.out.dir/rule:
+	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/EdgeListConverter.out.dir/rule
+.PHONY : matching/CMakeFiles/EdgeListConverter.out.dir/rule
+
+# Convenience name for target.
+EdgeListConverter.out: matching/CMakeFiles/EdgeListConverter.out.dir/rule
+
+.PHONY : EdgeListConverter.out
+
+# fast build rule for target.
+EdgeListConverter.out/fast:
+	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/build
+.PHONY : EdgeListConverter.out/fast
+
+# Convenience name for target.
 matching/CMakeFiles/GraphConverter.out.dir/rule:
 	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/GraphConverter.out.dir/rule
 .PHONY : matching/CMakeFiles/GraphConverter.out.dir/rule
@@ -139,51 +184,6 @@ SubgraphMatching.out: matching/CMakeFiles/SubgraphMatching.out.dir/rule
 SubgraphMatching.out/fast:
 	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f matching/CMakeFiles/SubgraphMatching.out.dir/build.make matching/CMakeFiles/SubgraphMatching.out.dir/build
 .PHONY : SubgraphMatching.out/fast
-
-# Convenience name for target.
-matching/CMakeFiles/EdgeListConverter.out.dir/rule:
-	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/EdgeListConverter.out.dir/rule
-.PHONY : matching/CMakeFiles/EdgeListConverter.out.dir/rule
-
-# Convenience name for target.
-EdgeListConverter.out: matching/CMakeFiles/EdgeListConverter.out.dir/rule
-
-.PHONY : EdgeListConverter.out
-
-# fast build rule for target.
-EdgeListConverter.out/fast:
-	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/build
-.PHONY : EdgeListConverter.out/fast
-
-# Convenience name for target.
-matching/CMakeFiles/ReassignLabel.dir/rule:
-	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/ReassignLabel.dir/rule
-.PHONY : matching/CMakeFiles/ReassignLabel.dir/rule
-
-# Convenience name for target.
-ReassignLabel: matching/CMakeFiles/ReassignLabel.dir/rule
-
-.PHONY : ReassignLabel
-
-# fast build rule for target.
-ReassignLabel/fast:
-	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/build
-.PHONY : ReassignLabel/fast
-
-# Convenience name for target.
-matching/CMakeFiles/SelectEdge.dir/rule:
-	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/SelectEdge.dir/rule
-.PHONY : matching/CMakeFiles/SelectEdge.dir/rule
-
-# Convenience name for target.
-SelectEdge: matching/CMakeFiles/SelectEdge.dir/rule
-
-.PHONY : SelectEdge
-
-# fast build rule for target.
-SelectEdge/fast:
-	cd /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build && $(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/build
-.PHONY : SelectEdge/fast
 
 BuildTable.o: BuildTable.cpp.o
 
@@ -488,13 +488,13 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... SelectEdge"
+	@echo "... ReassignLabel"
+	@echo "... EdgeListConverter.out"
 	@echo "... GraphConverter.out"
 	@echo "... SubgraphMatching.out"
-	@echo "... EdgeListConverter.out"
-	@echo "... ReassignLabel"
-	@echo "... SelectEdge"
-	@echo "... edit_cache"
 	@echo "... BuildTable.o"
 	@echo "... BuildTable.i"
 	@echo "... BuildTable.s"

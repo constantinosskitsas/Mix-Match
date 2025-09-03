@@ -95,19 +95,24 @@ int main(int argc, char** argv) {
     std::string QP = command.getQueryProperty();
     std::string QN = command.getQueryNumber();
     std::string QNL = command.getQueryNumberL();
-    int QNLR=stoi(QNL);
-    int QNR=stoi(QN);
+    int FairT=stoi(command.getFairT());
+    cout<<"hi"<<endl;
+    //int QNLR=stoi(QNL);
+    //int QNR=stoi(QN);
+    int QNLR=1;
+    int QNR=1;
+    cout<<"hi1"<<endl;
     //cout<<QNL<<"QNL"<<endl;
     std::string Dataset = command.getDatasetName();
-    
+    cout<<Dataset<<endl;
     std::string QuerN1 = "../../../../../Pilos-Subgraph_Matching/dataset/";
     std::string QuerN = "../../../../../FairSM/dataset/";
-    string Data_graph=QuerN+Dataset+"/data_graph/"+Dataset+".graph";
     string Data_graphQ=QuerN+Dataset+"/data_graph/"+Dataset+".graph";
     //Data_graph= "../../dataset/"+Dataset+"/data_graph/"+Dataset+".graph";
-    input_data_graph_file=Data_graph;
-    input_data_graph_file="../../dataset/RG/query_graph/randomGraph_1.txt";
-    int FairT=stoi(command.getFairT());
+    //this was before
+    //input_data_graph_file=Data_graph;
+    //input_data_graph_file="../../dataset/RG/query_graph/randomGraph_1.txt";
+    
     #ifdef printingM
     std::cout << "Command Line:" << std::endl;
     std::cout << "\tData Graph CSR: " << input_csr_file_path << std::endl;
@@ -131,7 +136,7 @@ int main(int argc, char** argv) {
     auto start = std::chrono::high_resolution_clock::now();
 
     
-    
+    cout<<input_data_graph_file<<endl;
 
     Graph* data_graph = new Graph(true);
 
@@ -166,8 +171,9 @@ int main(int argc, char** argv) {
     string Query_graph=QuerN1+Dataset+"/query_graph/query_"+QP+"_"+QS+"_"+to_string(QNR)+".graph";
     //Query_graph="../../dataset/"+Dataset+"/query_graph/query_"+QP+"_"+QS+"_"+to_string(QNR)+".graph";
     //Query_graph="../../dataset/"+Dataset+"/query_graph/"+QP+"_"+to_string(QNR)+".txt";
-    Query_graph="../../dataset/RG/query_graph/cycle_"+QS+".txt";
-    input_query_graph_file=Query_graph;
+    //Query_graph="../../dataset/RG/query_graph/cycle_"+QS+".txt";
+    //this was before
+    //input_query_graph_file=Query_graph;
     query_graph->loadGraphFromFile(input_query_graph_file);
     query_graph->buildCoreTable();
 

@@ -53,11 +53,11 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "graph/CMakeFiles/graph.dir/DependInfo.cmake"
+  "matching/CMakeFiles/SelectEdge.dir/DependInfo.cmake"
+  "matching/CMakeFiles/ReassignLabel.dir/DependInfo.cmake"
+  "matching/CMakeFiles/EdgeListConverter.out.dir/DependInfo.cmake"
   "matching/CMakeFiles/GraphConverter.out.dir/DependInfo.cmake"
   "matching/CMakeFiles/SubgraphMatching.out.dir/DependInfo.cmake"
-  "matching/CMakeFiles/EdgeListConverter.out.dir/DependInfo.cmake"
-  "matching/CMakeFiles/ReassignLabel.dir/DependInfo.cmake"
-  "matching/CMakeFiles/SelectEdge.dir/DependInfo.cmake"
   "utility/CMakeFiles/utility.dir/DependInfo.cmake"
   "utility/nucleus_decomposition/CMakeFiles/nd.dir/DependInfo.cmake"
   "utility/execution_tree/CMakeFiles/et.dir/DependInfo.cmake"
