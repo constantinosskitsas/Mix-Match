@@ -31,7 +31,7 @@ We alter the supported algorighms (enumeration method) to return coverage result
 ## Supported Algorithms
 |Algorithm|Description|Execution code
 |:--------:|:------------:|:------------:
-|M&M | Mix & Match | MM
+|M&M | Mix & Match | MM or MMN
 |M&M-I | Mix & Match with Initialization | MMI
 |DSQL | Diversified Subgraph Query | DSQL
 |DSQL+ | Optimized Diversified Subgraph Query | DSQLP
