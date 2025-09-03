@@ -118,20 +118,20 @@ clean: graph/CMakeFiles/graph.dir/clean
 # Directory level rules for directory matching
 
 # Convenience name for "all" pass in the directory.
+matching/all: matching/CMakeFiles/SelectEdge.dir/all
+matching/all: matching/CMakeFiles/ReassignLabel.dir/all
+matching/all: matching/CMakeFiles/EdgeListConverter.out.dir/all
 matching/all: matching/CMakeFiles/GraphConverter.out.dir/all
 matching/all: matching/CMakeFiles/SubgraphMatching.out.dir/all
-matching/all: matching/CMakeFiles/EdgeListConverter.out.dir/all
-matching/all: matching/CMakeFiles/ReassignLabel.dir/all
-matching/all: matching/CMakeFiles/SelectEdge.dir/all
 
 .PHONY : matching/all
 
 # Convenience name for "clean" pass in the directory.
+matching/clean: matching/CMakeFiles/SelectEdge.dir/clean
+matching/clean: matching/CMakeFiles/ReassignLabel.dir/clean
+matching/clean: matching/CMakeFiles/EdgeListConverter.out.dir/clean
 matching/clean: matching/CMakeFiles/GraphConverter.out.dir/clean
 matching/clean: matching/CMakeFiles/SubgraphMatching.out.dir/clean
-matching/clean: matching/CMakeFiles/EdgeListConverter.out.dir/clean
-matching/clean: matching/CMakeFiles/ReassignLabel.dir/clean
-matching/clean: matching/CMakeFiles/SelectEdge.dir/clean
 
 .PHONY : matching/clean
 
@@ -139,6 +139,117 @@ matching/clean: matching/CMakeFiles/SelectEdge.dir/clean
 matching/preinstall:
 
 .PHONY : matching/preinstall
+
+#=============================================================================
+# Target rules for target matching/CMakeFiles/SelectEdge.dir
+
+# All Build rule for target.
+matching/CMakeFiles/SelectEdge.dir/all:
+	$(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/depend
+	$(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles --progress-num=7,8 "Built target SelectEdge"
+.PHONY : matching/CMakeFiles/SelectEdge.dir/all
+
+# Include target in all.
+all: matching/CMakeFiles/SelectEdge.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+matching/CMakeFiles/SelectEdge.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/SelectEdge.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 0
+.PHONY : matching/CMakeFiles/SelectEdge.dir/rule
+
+# Convenience name for target.
+SelectEdge: matching/CMakeFiles/SelectEdge.dir/rule
+
+.PHONY : SelectEdge
+
+# clean rule for target.
+matching/CMakeFiles/SelectEdge.dir/clean:
+	$(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/clean
+.PHONY : matching/CMakeFiles/SelectEdge.dir/clean
+
+# clean rule for target.
+clean: matching/CMakeFiles/SelectEdge.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target matching/CMakeFiles/ReassignLabel.dir
+
+# All Build rule for target.
+matching/CMakeFiles/ReassignLabel.dir/all:
+	$(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/depend
+	$(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles --progress-num=5,6 "Built target ReassignLabel"
+.PHONY : matching/CMakeFiles/ReassignLabel.dir/all
+
+# Include target in all.
+all: matching/CMakeFiles/ReassignLabel.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+matching/CMakeFiles/ReassignLabel.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/ReassignLabel.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 0
+.PHONY : matching/CMakeFiles/ReassignLabel.dir/rule
+
+# Convenience name for target.
+ReassignLabel: matching/CMakeFiles/ReassignLabel.dir/rule
+
+.PHONY : ReassignLabel
+
+# clean rule for target.
+matching/CMakeFiles/ReassignLabel.dir/clean:
+	$(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/clean
+.PHONY : matching/CMakeFiles/ReassignLabel.dir/clean
+
+# clean rule for target.
+clean: matching/CMakeFiles/ReassignLabel.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target matching/CMakeFiles/EdgeListConverter.out.dir
+
+# All Build rule for target.
+matching/CMakeFiles/EdgeListConverter.out.dir/all:
+	$(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/depend
+	$(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles --progress-num=1,2 "Built target EdgeListConverter.out"
+.PHONY : matching/CMakeFiles/EdgeListConverter.out.dir/all
+
+# Include target in all.
+all: matching/CMakeFiles/EdgeListConverter.out.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+matching/CMakeFiles/EdgeListConverter.out.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/EdgeListConverter.out.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 0
+.PHONY : matching/CMakeFiles/EdgeListConverter.out.dir/rule
+
+# Convenience name for target.
+EdgeListConverter.out: matching/CMakeFiles/EdgeListConverter.out.dir/rule
+
+.PHONY : EdgeListConverter.out
+
+# clean rule for target.
+matching/CMakeFiles/EdgeListConverter.out.dir/clean:
+	$(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/clean
+.PHONY : matching/CMakeFiles/EdgeListConverter.out.dir/clean
+
+# clean rule for target.
+clean: matching/CMakeFiles/EdgeListConverter.out.dir/clean
+
+.PHONY : clean
 
 #=============================================================================
 # Target rules for target matching/CMakeFiles/GraphConverter.out.dir
@@ -215,117 +326,6 @@ matching/CMakeFiles/SubgraphMatching.out.dir/clean:
 
 # clean rule for target.
 clean: matching/CMakeFiles/SubgraphMatching.out.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target matching/CMakeFiles/EdgeListConverter.out.dir
-
-# All Build rule for target.
-matching/CMakeFiles/EdgeListConverter.out.dir/all:
-	$(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/depend
-	$(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles --progress-num=1,2 "Built target EdgeListConverter.out"
-.PHONY : matching/CMakeFiles/EdgeListConverter.out.dir/all
-
-# Include target in all.
-all: matching/CMakeFiles/EdgeListConverter.out.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-matching/CMakeFiles/EdgeListConverter.out.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/EdgeListConverter.out.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 0
-.PHONY : matching/CMakeFiles/EdgeListConverter.out.dir/rule
-
-# Convenience name for target.
-EdgeListConverter.out: matching/CMakeFiles/EdgeListConverter.out.dir/rule
-
-.PHONY : EdgeListConverter.out
-
-# clean rule for target.
-matching/CMakeFiles/EdgeListConverter.out.dir/clean:
-	$(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/clean
-.PHONY : matching/CMakeFiles/EdgeListConverter.out.dir/clean
-
-# clean rule for target.
-clean: matching/CMakeFiles/EdgeListConverter.out.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target matching/CMakeFiles/ReassignLabel.dir
-
-# All Build rule for target.
-matching/CMakeFiles/ReassignLabel.dir/all:
-	$(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/depend
-	$(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles --progress-num=5,6 "Built target ReassignLabel"
-.PHONY : matching/CMakeFiles/ReassignLabel.dir/all
-
-# Include target in all.
-all: matching/CMakeFiles/ReassignLabel.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-matching/CMakeFiles/ReassignLabel.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/ReassignLabel.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 0
-.PHONY : matching/CMakeFiles/ReassignLabel.dir/rule
-
-# Convenience name for target.
-ReassignLabel: matching/CMakeFiles/ReassignLabel.dir/rule
-
-.PHONY : ReassignLabel
-
-# clean rule for target.
-matching/CMakeFiles/ReassignLabel.dir/clean:
-	$(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/clean
-.PHONY : matching/CMakeFiles/ReassignLabel.dir/clean
-
-# clean rule for target.
-clean: matching/CMakeFiles/ReassignLabel.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target matching/CMakeFiles/SelectEdge.dir
-
-# All Build rule for target.
-matching/CMakeFiles/SelectEdge.dir/all:
-	$(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/depend
-	$(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles --progress-num=7,8 "Built target SelectEdge"
-.PHONY : matching/CMakeFiles/SelectEdge.dir/all
-
-# Include target in all.
-all: matching/CMakeFiles/SelectEdge.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-matching/CMakeFiles/SelectEdge.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 matching/CMakeFiles/SelectEdge.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/konstantinos/SubgraphMatchingSurvey-main/SubgraphMatchingSurvey-main/vlabel/build4/CMakeFiles 0
-.PHONY : matching/CMakeFiles/SelectEdge.dir/rule
-
-# Convenience name for target.
-SelectEdge: matching/CMakeFiles/SelectEdge.dir/rule
-
-.PHONY : SelectEdge
-
-# clean rule for target.
-matching/CMakeFiles/SelectEdge.dir/clean:
-	$(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/clean
-.PHONY : matching/CMakeFiles/SelectEdge.dir/clean
-
-# clean rule for target.
-clean: matching/CMakeFiles/SelectEdge.dir/clean
 
 .PHONY : clean
 

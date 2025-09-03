@@ -124,6 +124,45 @@ graph/fast:
 .PHONY : graph/fast
 
 #=============================================================================
+# Target rules for targets named SelectEdge
+
+# Build rule for target.
+SelectEdge: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 SelectEdge
+.PHONY : SelectEdge
+
+# fast build rule for target.
+SelectEdge/fast:
+	$(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/build
+.PHONY : SelectEdge/fast
+
+#=============================================================================
+# Target rules for targets named ReassignLabel
+
+# Build rule for target.
+ReassignLabel: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ReassignLabel
+.PHONY : ReassignLabel
+
+# fast build rule for target.
+ReassignLabel/fast:
+	$(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/build
+.PHONY : ReassignLabel/fast
+
+#=============================================================================
+# Target rules for targets named EdgeListConverter.out
+
+# Build rule for target.
+EdgeListConverter.out: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 EdgeListConverter.out
+.PHONY : EdgeListConverter.out
+
+# fast build rule for target.
+EdgeListConverter.out/fast:
+	$(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/build
+.PHONY : EdgeListConverter.out/fast
+
+#=============================================================================
 # Target rules for targets named GraphConverter.out
 
 # Build rule for target.
@@ -148,45 +187,6 @@ SubgraphMatching.out: cmake_check_build_system
 SubgraphMatching.out/fast:
 	$(MAKE) -f matching/CMakeFiles/SubgraphMatching.out.dir/build.make matching/CMakeFiles/SubgraphMatching.out.dir/build
 .PHONY : SubgraphMatching.out/fast
-
-#=============================================================================
-# Target rules for targets named EdgeListConverter.out
-
-# Build rule for target.
-EdgeListConverter.out: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 EdgeListConverter.out
-.PHONY : EdgeListConverter.out
-
-# fast build rule for target.
-EdgeListConverter.out/fast:
-	$(MAKE) -f matching/CMakeFiles/EdgeListConverter.out.dir/build.make matching/CMakeFiles/EdgeListConverter.out.dir/build
-.PHONY : EdgeListConverter.out/fast
-
-#=============================================================================
-# Target rules for targets named ReassignLabel
-
-# Build rule for target.
-ReassignLabel: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ReassignLabel
-.PHONY : ReassignLabel
-
-# fast build rule for target.
-ReassignLabel/fast:
-	$(MAKE) -f matching/CMakeFiles/ReassignLabel.dir/build.make matching/CMakeFiles/ReassignLabel.dir/build
-.PHONY : ReassignLabel/fast
-
-#=============================================================================
-# Target rules for targets named SelectEdge
-
-# Build rule for target.
-SelectEdge: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 SelectEdge
-.PHONY : SelectEdge
-
-# fast build rule for target.
-SelectEdge/fast:
-	$(MAKE) -f matching/CMakeFiles/SelectEdge.dir/build.make matching/CMakeFiles/SelectEdge.dir/build
-.PHONY : SelectEdge/fast
 
 #=============================================================================
 # Target rules for targets named utility
@@ -236,11 +236,11 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... graph"
+	@echo "... SelectEdge"
+	@echo "... ReassignLabel"
+	@echo "... EdgeListConverter.out"
 	@echo "... GraphConverter.out"
 	@echo "... SubgraphMatching.out"
-	@echo "... EdgeListConverter.out"
-	@echo "... ReassignLabel"
-	@echo "... SelectEdge"
 	@echo "... utility"
 	@echo "... nd"
 	@echo "... et"

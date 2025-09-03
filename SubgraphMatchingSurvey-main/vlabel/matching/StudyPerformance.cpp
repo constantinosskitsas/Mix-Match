@@ -99,12 +99,14 @@ int main(int argc, char** argv) {
     int QNR=stoi(QN);
     //cout<<QNL<<"QNL"<<endl;
     std::string Dataset = command.getDatasetName();
-    std::string QuerN = "../../../../../FairSM/dataset/";
+    
     std::string QuerN1 = "../../../../../Pilos-Subgraph_Matching/dataset/";
+    std::string QuerN = "../../../../../FairSM/dataset/";
     string Data_graph=QuerN+Dataset+"/data_graph/"+Dataset+".graph";
     string Data_graphQ=QuerN+Dataset+"/data_graph/"+Dataset+".graph";
     //Data_graph= "../../dataset/"+Dataset+"/data_graph/"+Dataset+".graph";
     input_data_graph_file=Data_graph;
+    input_data_graph_file="../../dataset/RG/query_graph/randomGraph_1.txt";
     int FairT=stoi(command.getFairT());
     #ifdef printingM
     std::cout << "Command Line:" << std::endl;
@@ -163,6 +165,8 @@ int main(int argc, char** argv) {
     Graph* query_graph = new Graph(true);
     string Query_graph=QuerN1+Dataset+"/query_graph/query_"+QP+"_"+QS+"_"+to_string(QNR)+".graph";
     //Query_graph="../../dataset/"+Dataset+"/query_graph/query_"+QP+"_"+QS+"_"+to_string(QNR)+".graph";
+    //Query_graph="../../dataset/"+Dataset+"/query_graph/"+QP+"_"+to_string(QNR)+".txt";
+    Query_graph="../../dataset/RG/query_graph/cycle_"+QS+".txt";
     input_query_graph_file=Query_graph;
     query_graph->loadGraphFromFile(input_query_graph_file);
     query_graph->buildCoreTable();
@@ -483,8 +487,25 @@ if (enable_symmetry) {
         //if (veq_tree == NULL) {
         //    GenerateFilteringPlan::generateDPisoFilterPlan(data_graph, query_graph, veq_tree, veq_order);        
         //}
+
+        s = EvaluateQuery::DIVSMFE(data_graph, query_graph,nodeID,edge_matrix, candidates, candidates_count,matching_order,
+            output_limit, call_count,TimeL1,FairT, ordered_constraints);
+        //s = EvaluateQuery::DIVSMSQ(data_graph, query_graph,nodeID,edge_matrix, candidates, candidates_count,matching_order,
+        //                                                   output_limit, call_count,TimeL1,FairT, ordered_constraints);
+        
+        
+        //s = EvaluateQuery::LFTJDIV1(data_graph, query_graph,edge_matrix, candidates, candidates_count,matching_order,
+        //                                                   output_limit, call_count,TimeL1,FairT, ordered_constraints);
+    }else if (input_engine_type == "MMN") {  
+        //if (veq_tree == NULL) {
+        //    GenerateFilteringPlan::generateDPisoFilterPlan(data_graph, query_graph, veq_tree, veq_order);        
+        //}
+
+        
         s = EvaluateQuery::DIVSMSQ(data_graph, query_graph,nodeID,edge_matrix, candidates, candidates_count,matching_order,
                                                            output_limit, call_count,TimeL1,FairT, ordered_constraints);
+        
+        
         //s = EvaluateQuery::LFTJDIV1(data_graph, query_graph,edge_matrix, candidates, candidates_count,matching_order,
         //                                                   output_limit, call_count,TimeL1,FairT, ordered_constraints);
     }

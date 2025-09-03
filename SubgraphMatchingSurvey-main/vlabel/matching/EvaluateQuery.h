@@ -39,6 +39,13 @@ struct enumResult
 
 class EvaluateQuery {
 public:
+
+static enumResult
+DIVSMFE(const Graph *data_graph, const Graph *query_graph,ui *&nodeId, Edges ***edge_matrix, ui **candidates,
+                       ui *candidates_count, ui *order, size_t output_limit_num, size_t &call_count, int TimeL, int FairT, const std::unordered_map<VertexID, std::pair<std::set<VertexID>, std::set<VertexID>>> &ordered_constraints);
+static enumResult
+DIVSMNN(const Graph *data_graph, const Graph *query_graph,ui *&nodeId, Edges ***edge_matrix, ui **candidates,
+                       ui *candidates_count, ui *order, size_t output_limit_num, size_t &call_count, int TimeL, int FairT, const std::unordered_map<VertexID, std::pair<std::set<VertexID>, std::set<VertexID>>> &ordered_constraints);
 static enumResult
  DSQLTOPK(const Graph *data_graph, const Graph *query_graph,ui *&nodeId, Edges ***edge_matrix, ui **candidates,
                     ui *candidates_count, ui *order, size_t output_limit_num, size_t &call_count, size_t &valid_vtx_cnt, int TimeL, int FairT,

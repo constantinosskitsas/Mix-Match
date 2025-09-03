@@ -102,5 +102,14 @@ For detailed parameter settings, see `matching/matchingcommand.h`.
 
 Please cite our work in your publications if it helps your research:
 ```
-
+@article{skitsas2025mnm,
+  title={Mix \& Match: : Subgraph Matching for Absolute Coverage},
+  author={Skitsas, Konstantinos and Papageorgiou, Ioannis G and Talebi, Mohammad Sadegh and Kantere, Verena and Katehakis, Michael N and Karras, Panagiotis},
+  journal={Proceedings of the VLDB Endowment},
+  volume={16},
+  number={1},
+  pages={90--98},
+  year={2022},
+  publisher={VLDB Endowment}
+}
 ```

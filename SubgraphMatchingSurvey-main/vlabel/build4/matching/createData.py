@@ -9,12 +9,15 @@ timtsn=[10]
 algo=["DV","FT1_DV","FT2_DV","FT3_DV","FT4_DV","LFTJ","RM","VEQ"]
 algo=["_DVGM","FT1_DVGM","FT2_DVGM","FT3_DVGM","FT4_DVGM","_LFSK","_LFTJK"]
 algo=["FT2_DVGM","FT4_DVGM","DVGMSQ","LFSK","LFTJK"]
+algo=["DVGMSQ"]
+algo=["MMK","MMIK"]
 #timtsn=[1]
 #FMPath="RE_PL_-1_patents_G16"
 FMPath="performance_experiment/NSCORRLFTJ_LFTJ_-1_dblp_G_8"
 FMPath2="performance_experiment/Skase_VEQ_-1_dblp_G_8"
 FMPath="performance_experiment/ADIVERSITY_F0__LFTJ_-1_dblp_G_8"
 FMPath="performance_experiment/DIV-BASIC_"
+FMPath="../../build/matching/performance_experiment/SHUTUP_"
 #FMPath="RE_PL_-1_patents_G"
 pathsize=["8","16","20","24","32"]
 #pathsize=["8"]
@@ -56,20 +59,20 @@ for i in range(len(algo)):
     for j in range(len(timts)):
         counter=0
         #with open(f'{FMPath}_{timts[j]}{algo[i]}{endf}', 'r') as file:
-        with open(f'{FMPath}{algo[i]}_-1_youtube_G_24_{timts[j]}{endf}', 'r') as file:
+        with open(f'{FMPath}{algo[i]}_-1_amazon_G_8_{timts[j]}{endf}', 'r') as file:
             for line in file:
                 values = line.split()
                 if(counter<100):
-                    MC.append(float(values[10]))
+                    MC.append(float(values[4]))
                     counter=counter+1
-                MC1.append(float(values[11]))
-                MC2.append(float(values[12]))
-                MC3.append(float(values[13]))
-                MC4.append(float(values[14]))
-                MC5.append(float(values[15]))
-                MC6.append(float(values[16]))
-                MC7.append(float(values[17]))
-                MC8.append(float(values[18]))
+                MC1.append(float(values[10]))
+                MC2.append(float(values[11]))
+                MC3.append(float(values[12]))
+                MC4.append(float(values[13]))
+                MC5.append(float(values[14]))
+                MC6.append(float(values[15]))
+                MC7.append(float(values[16]))
+                MC8.append(float(values[17]))
         avg_MC[i][j]=np.mean(MC)
         avg_MC1[i][j]=np.mean(MC1)
         avg_MC2[i][j]=np.mean(MC2)
@@ -146,6 +149,7 @@ for j in range(len(timts)):
         if(t==8):
             for i in range(len(algo)):
                 print(avg_MC8[i][j],end=' ')                 
+        print()
     #print(avg_MC1[i][j],end=' ')
     #print(avg_MC2[i][j],end=' ')
     #print(avg_MC3[i][j],end=' ')
@@ -153,8 +157,10 @@ for j in range(len(timts)):
     #print(avg_MC5[i][j],end=' ')
     #print(avg_MC6[i][j],end=' ')
     #print(avg_MC7[i][j],end=' ')
-        print()
+
 i=0
+print()
+print(avg_MC8[0][0]/avg_MC[0][0])
 #TOPK=[0]
 #print("Time ALG ALG10 ALG50 ALG100 ALG250 ALG500 ALG750 ALG1000")
 #for j in range(len(timts)):    

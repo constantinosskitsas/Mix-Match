@@ -2440,24 +2440,24 @@ EvaluateQuery::LFTJ(const Graph *data_graph, const Graph *query_graph,ui *&nodeI
             Match_BA[cur_depth] = false;
             ui valid_idx = valid_candidate_idx[cur_depth][idx[cur_depth]];
 
-#ifdef ENABLE_DIVERSITY
-            if (cur_depth == 0 && idx[cur_depth] != 0 && EmbSum.size() > 0 && FairT > 0)
+
+            if (cur_depth == 0 && idx[cur_depth] != 0 && FairT > 0)
             {
                 if (FairT == 1)
                     rankSimple(order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
                 else if (FairT == 2) // already have experiments on that
-                    rankLess(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
-                else if (FairT == 3)
+                    rankLess(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);              
+                    else if (FairT == 3)
                     rankMore(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
-                else if (FairT == 4)
+                    else if (FairT == 4)
                     rankFinal(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
-                else if (FairT == 5)
+                    else if (FairT == 5)
                     rankFinal1(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
 
                 valid_idx = valid_candidate_idx[cur_depth][idx[cur_depth]];
             }
             // from all the valid IDS
-#endif
+
 
             VertexID u = order[cur_depth];
             VertexID v = candidates[u][valid_idx];
@@ -2675,7 +2675,10 @@ EXIT:
     ui countSMU=0;
     for (int i=0;i<data_graph->getVerticesCount();i++){
         countSMU+=nodeId[i];
-    }
+        if(nodeId[i]==1){
+            cout<<i<<", ";
+        }
+    }cout<<endl;
     s.Can_embed = countSMU;
     // s.topk=greedysum;
     return s;
@@ -7248,6 +7251,986 @@ EXIT:
 }
 
 enumResult
+EvaluateQuery::DIVSMNN(const Graph *data_graph, const Graph *query_graph,ui *&nodeId, Edges ***edge_matrix, ui **candidates,
+                       ui *candidates_count, ui *order, size_t output_limit_num, size_t &call_count, int TimeL, int FairT, const std::unordered_map<VertexID, std::pair<std::set<VertexID>, std::set<VertexID>>> &ordered_constraints)
+{
+    //assumming that creating matrix can be done before we do not count the time.
+    int qsiz = query_graph->getVerticesCount();
+    int ksize = 1000;
+    int SolPos[ksize+1][qsiz];
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<>> pq;
+    int tempPos[qsiz];
+    
+    auto start = std::chrono::high_resolution_clock::now();
+
+    enumResult s;
+    // Generate bn.
+
+    ui **bn;
+    ui *bn_count;
+    generateBN(query_graph, order, bn, bn_count);
+    //unordered_set<ui> EmbSum;
+    bool NotifyALL = true;
+    // Allocate the memory buffer.
+    ui *idx;
+    ui *idx_count;
+    ui *embedding;
+    ui *idx_embedding;
+    ui *temp_buffer;
+    ui **valid_candidate_idx;
+    bool *visited_vertices;
+    int addPos=0;
+
+
+    int UNPM = 0;
+    allocateBuffer(data_graph, query_graph, candidates_count, idx, idx_count, embedding, idx_embedding,
+                   temp_buffer, valid_candidate_idx, visited_vertices);
+    vector<ui> VN[query_graph->getVerticesCount()];
+    vector<ui> VNTemp;
+    
+
+    int RQ[query_graph->getVerticesCount()];
+    for (int i = 0; i < query_graph->getVerticesCount(); i++)
+    {
+        RQ[order[i]] = i; // depth RQ[u]=
+    }
+    bool *embd_vertices = new bool[data_graph->getVerticesCount()];
+    std::fill(embd_vertices, embd_vertices + data_graph->getVerticesCount(), false);
+    size_t embedding_cnt = 0;
+    int cur_depth = 0;
+    int max_depth = query_graph->getVerticesCount();
+    VertexID start_vertex = order[0];
+    bool Match_BA[max_depth] = {false};
+    idx[cur_depth] = 0;                                    // set the starting position to 0 for the current depth
+    idx_count[cur_depth] = candidates_count[start_vertex]; // set the size for current depth
+    // all the nodes are possible candidates
+
+    // end1 = std::chrono::high_resolution_clock::now();
+    int count2 = 1;
+
+    size_t **candidatesHC = NULL;
+    unordered_map<size_t, vector<ui>> *idToValues;
+    idToValues = new unordered_map<size_t, vector<ui>>[query_graph->getVerticesCount()];
+    candidatesHC = new size_t *[qsiz];
+
+    for (ui i = 0; i < qsiz; ++i)
+    {
+        candidatesHC[i] = new size_t[candidates_count[i]];
+        memset(candidatesHC[i], 0, sizeof(size_t) * candidates_count[i]);
+    }
+    calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, start_vertex, 0);
+    // calculateCellFN(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, start_vertex, 0,RQ);
+    count2++;
+    VN[start_vertex] = idToValues[start_vertex][candidatesHC[start_vertex][0]];
+
+
+    for (ui i = 0; i < idx_count[cur_depth]; ++i)
+    {
+        valid_candidate_idx[cur_depth][i] = i;
+    }
+
+
+    std::vector<std::bitset<MAXIMUM_QUERY_GRAPH_SIZE>> ancestors;
+    computeAncestor(query_graph, bn, bn_count, order, ancestors);
+    AncestorWithSymmetryBreaking(query_graph, ancestors, ordered_constraints);
+    std::vector<std::bitset<MAXIMUM_QUERY_GRAPH_SIZE>> vec_failing_set(max_depth);
+    std::unordered_map<VertexID, VertexID> reverse_embedding;
+    reverse_embedding.reserve(MAXIMUM_QUERY_GRAPH_SIZE * 2);
+    bool del = false;
+
+    int k;
+    VertexID utemp; // u is current depth qid
+    VertexID vtemp;
+    int counter = 0;
+    double ens = 0;
+    int ordCand[idx_count[0]] = {100000};
+    TimeL = TimeL * 1000;
+
+
+      
+
+
+
+    while (true)
+    {
+        // current position smaller than size
+        while (idx[cur_depth] < idx_count[cur_depth])
+        {
+            Match_BA[cur_depth] = false;
+            auto end = std::chrono::high_resolution_clock::now();
+            ens = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            if (ens > TimeL)
+            { // 1000 1 sec
+                goto EXIT;
+            }
+            ui valid_idx = valid_candidate_idx[cur_depth][idx[cur_depth]]; // valid id
+            if (valid_idx == 10000000)                                     //||
+            {
+                idx[cur_depth] += 1;
+                continue;
+            }
+            
+            if (cur_depth == 0 && idx[cur_depth] != 0  && FairT > 0)
+            {
+                if (FairT == 1)
+                    rankSimple(order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 2) 
+                    rankLess(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 3)
+                    rankMore(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 4)
+                    rankFinal(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 5)
+                    rankFinal1(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 6)
+                    rankRandom(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                valid_idx = valid_candidate_idx[cur_depth][idx[cur_depth]];
+            if (valid_idx == 10000000)                                     //||
+            {
+                idx[cur_depth] += 1;
+                continue;
+            }
+            }
+            // from all the valid IDS
+
+            VertexID u = order[cur_depth]; // u is current depth qid
+
+            VertexID v = candidates[u][valid_idx]; // v is FCS[qid][vid] valid_idx-> position in CS
+
+            size_t candidate = candidatesHC[u][valid_idx];
+            if (candidate == 0 && cur_depth == 0)
+            {
+                calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx);
+                //calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx,RQ);
+                count2++;
+            }
+            // else if (candidate == 0 &&cur_depth != max_depth - 1)
+            else if (candidate == 0 && cur_depth != max_depth - 1&&false)
+            {
+                //calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx);
+                calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx);
+                //calculateCellFN(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx, RQ);
+                //calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, start_vertex, 0);
+
+                count2++;
+            }
+            // candidate = candidatesHC[u][valid_idx];
+            VN[u].clear();
+            if (cur_depth != max_depth - 1) // change here
+            {
+                // VN[u] = idToValues[u][candidate];
+                VN[u] = idToValues[u][candidatesHC[u][valid_idx]];
+
+                if (cur_depth != 0&&false)
+                {
+                    int ia = idx[cur_depth];
+                    int io = 0;
+                    VNTemp.clear();
+                    while (ia < idx_count[cur_depth] && io < VN[u].size())
+                    {
+
+                        ui valid_idxN = valid_candidate_idx[cur_depth][ia];
+                        if (valid_idxN == 10000000)
+                        {
+                            ia += 1;
+                            continue;
+                        }
+                        if (VN[u][io] == valid_idxN)
+                        {
+                            VNTemp.push_back(VN[u][io]);
+                            ia++;
+                            io++;
+                        }
+
+                        else if (VN[u][io] > valid_idxN)
+                            ia++;
+                        else
+                            io++;
+                    }
+                    VN[u] = VNTemp;
+                }
+            }
+
+            // set embedings found to empty for start
+
+            if (visited_vertices[v])
+            { // if conflict on the last level then equivalence are match.
+
+                VNTemp.clear();
+                ui utemp = reverse_embedding[v];
+
+
+                if (cur_depth != max_depth - 1)
+                {
+                    if (VN[u].size() > 0 && VN[utemp].size() > 0)
+                    {
+                        int ia = 0;
+                        int io = 0;
+
+                        while (ia < VN[u].size() && io < VN[utemp].size())
+                        {
+                            if (candidates[u][VN[u][ia]] == candidates[utemp][VN[utemp][io]])
+                            {
+                                VNTemp.push_back(VN[utemp][io]);
+                                ia++;
+                                io++;
+                            }
+                            else if (candidates[u][VN[u][ia]] < candidates[utemp][VN[utemp][io]])
+                                ia++;
+                            else
+                                io++;
+                        }
+                    }
+                    VN[utemp] = VNTemp;
+                    VNTemp.clear();
+                    // break;
+                }
+                else
+                { // enumerate the results if it has equivalent nodes.
+                    if (VN[utemp].size() > 1)
+                    {
+                        VNTemp.clear();
+                        for (int ai = 0; ai < VN[utemp].size(); ai++)
+                        {
+                            if (!visited_vertices[candidates[utemp][VN[utemp][ai]]])
+                                VNTemp.push_back(VN[utemp][ai]);
+                        }
+                                
+                                    
+                                
+                        if (VNTemp.size() >= 1)
+                        {
+                            // heuristic there is a match so we count.
+                            //  we can also exclude by just using VTEMP
+                            // for utemp to count the correct number of matchings
+                            //temp_sol[utemp].push_back(candidates[utemp][VNTemp[0]]);
+                            int UNPMtemp = 0;
+                            //UNPMtemp = EmbSum.insert(v).second;
+                            nodeId[v]=1;
+                            Match_BA[0] = true;
+                            int ao = cur_depth - 1; //-1;
+                            ui vqo = order[ao];
+                            UNPM = 0; //
+                            while (ao >= 0)
+                            {  
+                                Match_BA[ao] = true;
+                                // EmbSum.insert(embedding[vqo]);
+                                if(embedding[vqo]!=v){   
+                                    nodeId[embedding[vqo]]=1;                                 
+                                }else
+                                {
+                                    nodeId[candidates[vqo][VNTemp[0]]]=1; 
+                                }
+                                //&&ao!=max_depth-1
+                                if (VN[vqo].size() > 0)
+                                {
+                                    for (int dd = 0; dd < VN[vqo].size(); dd++)
+                                    {
+                                        if (VN[vqo][dd] != 10000000)
+                                        {     
+                                            nodeId[candidates[vqo][VN[vqo][dd]]]=1;                                                                                                                                  
+                                        }
+                                    }
+                                }
+
+                                ao--;
+                                vqo = order[ao];
+                            }
+                            // reverse_embedding.erase(embedding[u]);
+                            vec_failing_set[cur_depth].set();
+                            vec_failing_set[cur_depth - 1] |= vec_failing_set[cur_depth];
+
+                        }
+                        else
+                        { // update equivalent class of VN[utemp]
+                            int ia = 0;
+                            int io = 0;
+                            VNTemp.clear();
+                            while (ia < idx_count[cur_depth] && io < VN[utemp].size())
+                            {
+
+                                ui valid_idxN = valid_candidate_idx[cur_depth][ia];
+                                if (valid_idxN == 10000000)
+                                {
+                                    ia += 1;
+                                    continue;
+                                }
+                                if (VN[utemp][io] == valid_idxN)
+                                {
+                                    // VNTemp.push_back(VN[u][io]);
+                                    VNTemp.push_back(VN[utemp][io]);
+                                    ia++;
+                                    io++;
+                                }
+
+                                else if (VN[utemp][io] > valid_idxN)
+                                    ia++;
+                                else
+                                    io++;
+                                // ia++;
+                            }
+                            VN[utemp] = VNTemp;
+                            VNTemp.clear();
+                        }
+                    }
+                }
+                // }
+                //}
+                VN[u].clear();
+
+                idx[cur_depth] += 1;
+                vec_failing_set[cur_depth] = ancestors[u];
+                vec_failing_set[cur_depth] |= ancestors[reverse_embedding[v]];
+                vec_failing_set[cur_depth - 1] |= vec_failing_set[cur_depth];
+
+                continue;
+            }
+            embd_vertices[v] = true;
+            counter++;
+            embedding[u] = v;             // set the embeding of depth qid to v
+            idx_embedding[u] = valid_idx; // reverse the id of the embdeing to the position
+            visited_vertices[v] = true;
+            idx[cur_depth] += 1; // next element
+
+            while (cur_depth < idx_count[cur_depth] && valid_candidate_idx[cur_depth][idx[cur_depth]] == 10000000)
+            {
+                idx[cur_depth] += 1;
+            }
+
+            reverse_embedding[v] = u;
+
+            if (cur_depth == max_depth - 1)
+            {
+                embedding_cnt += 1;
+                visited_vertices[v] = false;
+                embd_vertices[v] = false;
+                counter--;
+                int UNPMtemp = 0;
+                // UNPMtemp=EmbSum.insert(embedding[order[cur_depth]]).second;
+
+                int ao = cur_depth; //-1;
+                ui vqo = order[ao];
+                int UNPM2 = 0;
+                UNPM = 0; //
+                while (ao >= 0)
+                {
+                    Match_BA[ao] = true;
+                    // EmbSum.insert(embedding[vqo]);
+                    //UNPMtemp = EmbSum.insert(embedding[vqo]).second;
+                     nodeId[embedding[vqo]]=1;  
+                    //&&ao!=max_depth-1
+                    if (VN[vqo].size() > 0)
+                    {
+                        for (int dd = 0; dd < VN[vqo].size(); dd++)
+                        {
+                            if (VN[vqo][dd] != 10000000)
+                            {  
+                                nodeId[candidates[vqo][VN[vqo][dd]]]=1;                                
+                            }
+                        }
+                    }
+
+                    // Match_BA[ao] = true;
+                    ao--;
+                    vqo = order[ao];
+                }
+
+                reverse_embedding.erase(embedding[u]);
+                vec_failing_set[cur_depth].set();
+                vec_failing_set[cur_depth - 1] |= vec_failing_set[cur_depth];
+
+
+                if (embedding_cnt >= output_limit_num)
+                {
+                    goto EXIT;
+                }
+            }
+            else
+            {
+                call_count += 1;
+                cur_depth += 1;     // next depth
+                idx[cur_depth] = 0; // set the element to 0
+                // generateValidCandidateIndex(cur_depth, idx_embedding, idx_count, valid_candidate_idx, edge_matrix, bn,
+                //                             bn_count, order, temp_buffer, candidates, candidates_count, query_graph);
+                generateValidCandidateIndex(cur_depth, idx_embedding, idx_count, valid_candidate_idx, edge_matrix, bn,
+                                            bn_count, order, temp_buffer);
+                
+                pruneCandidatesIndexBySymmetryBreakingC(cur_depth, embedding, order, candidates_count, candidates,
+                                                       idx_count, valid_candidate_idx, ordered_constraints);
+
+                // get the candidates for next depth
+                if (idx_count[cur_depth] == 0)
+                {
+                    vec_failing_set[cur_depth - 1] = ancestors[order[cur_depth]];
+                }
+                else
+                {
+                    vec_failing_set[cur_depth - 1].reset();
+                }
+            }
+        }
+
+        cur_depth -= 1;
+
+        if (cur_depth == max_depth - 1)
+        {
+            continue;
+        }
+
+        if (cur_depth < 0)
+            break;
+        else
+        {
+            ui vq = order[cur_depth];
+            if (VN[vq].size() > 1)
+            { 
+                int add = 0;
+                for (int dd = 0; dd < VN[vq].size(); dd++)
+                {
+                    for (int kk = (idx[cur_depth]); kk < idx_count[cur_depth]; kk++)
+                    {
+                        ui valid_idxn = valid_candidate_idx[cur_depth][kk];
+                        if (valid_idxn == 10000000)
+                        {
+                            continue;
+                        }
+
+                        if (valid_idxn == VN[vq][dd])
+                        {
+                            valid_candidate_idx[cur_depth][kk] = 10000000;
+                            break;
+                        }
+                    }
+                }
+            }
+            VN[vq].clear();
+
+            VertexID u = order[cur_depth];
+            reverse_embedding.erase(embedding[u]);
+            if (cur_depth != 0)
+            {
+                if (!vec_failing_set[cur_depth].test(u))
+                {
+                    vec_failing_set[cur_depth - 1] = vec_failing_set[cur_depth];
+                    idx[cur_depth] = idx_count[cur_depth];
+                }
+                else
+                {
+                    vec_failing_set[cur_depth - 1] |= vec_failing_set[cur_depth];
+                }
+            }
+
+            visited_vertices[embedding[u]] = false;
+            embd_vertices[embedding[u]] = false;
+            counter--;
+        }
+    }
+
+    EXIT:
+    releaseBuffer(max_depth, idx, idx_count, embedding, idx_embedding, temp_buffer, valid_candidate_idx,
+                  visited_vertices,
+                  bn, bn_count);
+
+    std::priority_queue<std::pair<int, int>> maxHeap;
+    int topkcounter = 0;
+    int greedysum = 0;
+    int true_cand_sum = 0;
+    int countSol=0;
+    for (int i=0;i<data_graph->getVerticesCount();i++){
+        countSol+=nodeId[i];
+    }
+    s.Can_embed = countSol;
+    s.embedding_cnt = embedding_cnt;
+    s.candidate_true_count_sum = true_cand_sum;
+    return s;
+}
+
+enumResult
+EvaluateQuery::DIVSMFE(const Graph *data_graph, const Graph *query_graph,ui *&nodeId, Edges ***edge_matrix, ui **candidates,
+                       ui *candidates_count, ui *order, size_t output_limit_num, size_t &call_count, int TimeL, int FairT, const std::unordered_map<VertexID, std::pair<std::set<VertexID>, std::set<VertexID>>> &ordered_constraints)
+{
+    //assumming that creating matrix can be done before we do not count the time.
+    int qsiz = query_graph->getVerticesCount();
+    int ksize = 1000;
+    int SolPos[ksize+1][qsiz];
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<>> pq;
+    int tempPos[qsiz];
+    
+    auto start = std::chrono::high_resolution_clock::now();
+
+    enumResult s;
+    // Generate bn.
+
+    ui **bn;
+    ui *bn_count;
+    generateBN(query_graph, order, bn, bn_count);
+    //unordered_set<ui> EmbSum;
+    bool NotifyALL = true;
+    // Allocate the memory buffer.
+    ui *idx;
+    ui *idx_count;
+    ui *embedding;
+    ui *idx_embedding;
+    ui *temp_buffer;
+    ui **valid_candidate_idx;
+    bool *visited_vertices;
+    int addPos=0;
+
+
+    int UNPM = 0;
+    allocateBuffer(data_graph, query_graph, candidates_count, idx, idx_count, embedding, idx_embedding,
+                   temp_buffer, valid_candidate_idx, visited_vertices);
+    vector<ui> VN[query_graph->getVerticesCount()];
+    vector<ui> VNTemp;
+    
+
+    int RQ[query_graph->getVerticesCount()];
+    for (int i = 0; i < query_graph->getVerticesCount(); i++)
+    {
+        RQ[order[i]] = i; // depth RQ[u]=
+    }
+    bool *embd_vertices = new bool[data_graph->getVerticesCount()];
+    std::fill(embd_vertices, embd_vertices + data_graph->getVerticesCount(), false);
+    size_t embedding_cnt = 0;
+    int cur_depth = 0;
+    int max_depth = query_graph->getVerticesCount();
+    VertexID start_vertex = order[0];
+    bool Match_BA[max_depth] = {false};
+    idx[cur_depth] = 0;                                    // set the starting position to 0 for the current depth
+    idx_count[cur_depth] = candidates_count[start_vertex]; // set the size for current depth
+    // all the nodes are possible candidates
+
+    // end1 = std::chrono::high_resolution_clock::now();
+    int count2 = 1;
+
+    size_t **candidatesHC = NULL;
+    unordered_map<size_t, vector<ui>> *idToValues;
+    idToValues = new unordered_map<size_t, vector<ui>>[query_graph->getVerticesCount()];
+    candidatesHC = new size_t *[qsiz];
+
+    for (ui i = 0; i < qsiz; ++i)
+    {
+        candidatesHC[i] = new size_t[candidates_count[i]];
+        memset(candidatesHC[i], 0, sizeof(size_t) * candidates_count[i]);
+    }
+    calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, start_vertex, 0);
+    // calculateCellFN(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, start_vertex, 0,RQ);
+    count2++;
+    VN[start_vertex] = idToValues[start_vertex][candidatesHC[start_vertex][0]];
+
+
+    for (ui i = 0; i < idx_count[cur_depth]; ++i)
+    {
+        valid_candidate_idx[cur_depth][i] = i;
+    }
+
+
+    std::vector<std::bitset<MAXIMUM_QUERY_GRAPH_SIZE>> ancestors;
+    computeAncestor(query_graph, bn, bn_count, order, ancestors);
+    AncestorWithSymmetryBreaking(query_graph, ancestors, ordered_constraints);
+    std::vector<std::bitset<MAXIMUM_QUERY_GRAPH_SIZE>> vec_failing_set(max_depth);
+    std::unordered_map<VertexID, VertexID> reverse_embedding;
+    reverse_embedding.reserve(MAXIMUM_QUERY_GRAPH_SIZE * 2);
+    bool del = false;
+
+    int k;
+    VertexID utemp; // u is current depth qid
+    VertexID vtemp;
+    int counter = 0;
+    double ens = 0;
+    int ordCand[idx_count[0]] = {100000};
+    TimeL = TimeL * 1000;
+
+
+      
+
+
+
+    while (true)
+    {
+        // current position smaller than size
+        while (idx[cur_depth] < idx_count[cur_depth])
+        {
+            Match_BA[cur_depth] = false;
+            auto end = std::chrono::high_resolution_clock::now();
+            ens = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            if (ens > TimeL)
+            { // 1000 1 sec
+                goto EXIT;
+            }
+            ui valid_idx = valid_candidate_idx[cur_depth][idx[cur_depth]]; // valid id
+            if (valid_idx == 10000000)                                     //||
+            {
+                idx[cur_depth] += 1;
+                continue;
+            }
+            
+            if (cur_depth == 0 && idx[cur_depth] != 0  && FairT > 0)
+            {
+                if (FairT == 1)
+                    rankSimple(order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 2) 
+                    rankLess(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 3)
+                    rankMore(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 4)
+                    rankFinal(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 5)
+                    rankFinal1(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                else if (FairT == 6)
+                    rankRandom(query_graph, edge_matrix, order[0], nodeId, candidates, valid_candidate_idx, idx, valid_idx, idx_count);
+                valid_idx = valid_candidate_idx[cur_depth][idx[cur_depth]];
+            if (valid_idx == 10000000)                                     //||
+            {
+                idx[cur_depth] += 1;
+                continue;
+            }
+            }
+            // from all the valid IDS
+
+            VertexID u = order[cur_depth]; // u is current depth qid
+
+            VertexID v = candidates[u][valid_idx]; // v is FCS[qid][vid] valid_idx-> position in CS
+
+            size_t candidate = candidatesHC[u][valid_idx];
+            if (candidate == 0 && cur_depth == 0)
+            {
+                calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx);
+                //calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx,RQ);
+                count2++;
+            }
+            // else if (candidate == 0 &&cur_depth != max_depth - 1)
+            else if (candidate == 0 && cur_depth != max_depth - 1)
+            {
+                //calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx);
+                //calculateCell(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx);
+                calculateCellFN(query_graph, edge_matrix, candidates_count, candidatesHC, idToValues, count2, u, valid_idx, RQ);
+                count2++;
+            }
+            // candidate = candidatesHC[u][valid_idx];
+            VN[u].clear();
+            if (cur_depth != max_depth - 1) // change here
+            {
+                // VN[u] = idToValues[u][candidate];
+                VN[u] = idToValues[u][candidatesHC[u][valid_idx]];
+
+                if (cur_depth != 0)
+                {
+                    int ia = idx[cur_depth];
+                    int io = 0;
+                   
+                        size_t write = 0;
+                        //size_t ia = idx[cur_depth];
+                        //size_t ia =0;
+                        for (size_t read = 0; read < VN[u].size() && ia < idx_count[cur_depth]; ) {
+                            ui valid = valid_candidate_idx[cur_depth][ia];
+                            if (valid == 10000000) { ++ia; continue; }
+                            if (VN[u][read] == valid) VN[u][write++] = VN[u][read++], ++ia;
+                            else if (VN[u][read] > valid) ++ia;
+                            else ++read;
+                        }
+                        VN[u].resize(write);
+                }
+            }
+
+            // set embedings found to empty for start
+
+            if (visited_vertices[v])
+            { // if conflict on the last level then equivalence are match.
+
+                VNTemp.clear();
+                ui utemp = reverse_embedding[v];
+
+
+                if (cur_depth != max_depth - 1)
+                //if (cur_depth != max_depth - 1&&false)
+                {size_t write = 0; 
+            if (VN[u].size() > 0 && VN[utemp].size() > 0)
+            {
+                size_t ia = 0;                // iterator in VN[u]
+                size_t io = 0;                // iterator in VN[utemp] (read)
+                            // iterator in VN[utemp] (write)
+        
+                while (ia < VN[u].size() && io < VN[utemp].size())
+                {
+                    auto cu = candidates[u]     [ VN[u]     [ia] ];
+                    auto cv = candidates[utemp][ VN[utemp][io] ];
+        
+                    if (cu == cv)                               // keep
+                    {
+                        VN[utemp][write++] = VN[utemp][io];
+                        ++ia;
+                        ++io;
+                    }
+                    else if (cu < cv) ++ia;                     // advance ia
+                    else              ++io;                     // advance io
+                }
+                VN[utemp].resize(write);                          // discard tail
+            }
+        }
+                    // break;
+                
+                else
+                { // enumerate the results if it has equivalent nodes.
+                    if (VN[utemp].size() > 1)
+                    {
+                        VNTemp.clear();
+                        for (int ai = 0; ai < VN[utemp].size(); ai++)
+                        {
+                            if (!visited_vertices[candidates[utemp][VN[utemp][ai]]])
+                                VNTemp.push_back(VN[utemp][ai]);
+                        }
+                                
+                                    
+                                
+                        if (VNTemp.size() >= 1)
+                        {
+                            // heuristic there is a match so we count.
+                            //  we can also exclude by just using VTEMP
+                            // for utemp to count the correct number of matchings
+                            //temp_sol[utemp].push_back(candidates[utemp][VNTemp[0]]);
+                            int UNPMtemp = 0;
+                            //UNPMtemp = EmbSum.insert(v).second;
+                            nodeId[v]=1;
+                            Match_BA[0] = true;
+                            int ao = cur_depth - 1; //-1;
+                            ui vqo = order[ao];
+                            UNPM = 0; //
+                            while (ao >= 0)
+                            {  
+                                Match_BA[ao] = true;
+                                // EmbSum.insert(embedding[vqo]);
+                                if(embedding[vqo]!=v){   
+                                    nodeId[embedding[vqo]]=1;                                 
+                                }else
+                                {
+                                    nodeId[candidates[vqo][VNTemp[0]]]=1; 
+                                }
+                                //&&ao!=max_depth-1
+                                if (VN[vqo].size() > 0)
+                                {
+                                    for (int dd = 0; dd < VN[vqo].size(); dd++)
+                                    {
+                                        if (VN[vqo][dd] != 10000000)
+                                        {     
+                                            nodeId[candidates[vqo][VN[vqo][dd]]]=1;                                                                                                                                  
+                                        }
+                                    }
+                                }
+
+                                ao--;
+                                vqo = order[ao];
+                            }
+                            // reverse_embedding.erase(embedding[u]);
+                            vec_failing_set[cur_depth].set();
+                            vec_failing_set[cur_depth - 1] |= vec_failing_set[cur_depth];
+
+                        }
+                        else
+                        { // update equivalent class of VN[utemp]
+                            int ia = 0;
+                            int io = 0;
+                            VNTemp.clear();
+                            while (ia < idx_count[cur_depth] && io < VN[utemp].size())
+                            {
+
+                                ui valid_idxN = valid_candidate_idx[cur_depth][ia];
+                                if (valid_idxN == 10000000)
+                                {
+                                    ia += 1;
+                                    continue;
+                                }
+                                if (VN[utemp][io] == valid_idxN)
+                                {
+                                    // VNTemp.push_back(VN[u][io]);
+                                    VNTemp.push_back(VN[utemp][io]);
+                                    ia++;
+                                    io++;
+                                }
+
+                                else if (VN[utemp][io] > valid_idxN)
+                                    ia++;
+                                else
+                                    io++;
+                                // ia++;
+                            }
+                            VN[utemp] = VNTemp;
+                            VNTemp.clear();
+                        }
+                    }
+                }
+                // }
+                //}
+                VN[u].clear();
+
+                idx[cur_depth] += 1;
+                vec_failing_set[cur_depth] = ancestors[u];
+                vec_failing_set[cur_depth] |= ancestors[reverse_embedding[v]];
+                vec_failing_set[cur_depth - 1] |= vec_failing_set[cur_depth];
+
+                continue;
+            }
+            embd_vertices[v] = true;
+            counter++;
+            embedding[u] = v;             // set the embeding of depth qid to v
+            idx_embedding[u] = valid_idx; // reverse the id of the embdeing to the position
+            visited_vertices[v] = true;
+            idx[cur_depth] += 1; // next element
+
+            while (cur_depth < idx_count[cur_depth] && valid_candidate_idx[cur_depth][idx[cur_depth]] == 10000000)
+            {
+                idx[cur_depth] += 1;
+            }
+
+            reverse_embedding[v] = u;
+
+            if (cur_depth == max_depth - 1)
+            {
+                embedding_cnt += 1;
+                visited_vertices[v] = false;
+                embd_vertices[v] = false;
+                counter--;
+                int UNPMtemp = 0;
+                // UNPMtemp=EmbSum.insert(embedding[order[cur_depth]]).second;
+
+                int ao = cur_depth; //-1;
+                ui vqo = order[ao];
+                int UNPM2 = 0;
+                UNPM = 0; //
+                while (ao >= 0)
+                {
+                    Match_BA[ao] = true;
+                    // EmbSum.insert(embedding[vqo]);
+                    //UNPMtemp = EmbSum.insert(embedding[vqo]).second;
+                     nodeId[embedding[vqo]]=1;  
+                    //&&ao!=max_depth-1
+                    if (VN[vqo].size() > 0)
+                    {
+                        for (int dd = 0; dd < VN[vqo].size(); dd++)
+                        {
+                            if (VN[vqo][dd] != 10000000)
+                            {  
+                                nodeId[candidates[vqo][VN[vqo][dd]]]=1;                                
+                            }
+                        }
+                    }
+
+                    // Match_BA[ao] = true;
+                    ao--;
+                    vqo = order[ao];
+                }
+
+                reverse_embedding.erase(embedding[u]);
+                vec_failing_set[cur_depth].set();
+                vec_failing_set[cur_depth - 1] |= vec_failing_set[cur_depth];
+
+
+                if (embedding_cnt >= output_limit_num)
+                {
+                    goto EXIT;
+                }
+            }
+            else
+            {
+                call_count += 1;
+                cur_depth += 1;     // next depth
+                idx[cur_depth] = 0; // set the element to 0
+                // generateValidCandidateIndex(cur_depth, idx_embedding, idx_count, valid_candidate_idx, edge_matrix, bn,
+                //                             bn_count, order, temp_buffer, candidates, candidates_count, query_graph);
+                generateValidCandidateIndex(cur_depth, idx_embedding, idx_count, valid_candidate_idx, edge_matrix, bn,
+                                            bn_count, order, temp_buffer);
+                
+                pruneCandidatesIndexBySymmetryBreakingC(cur_depth, embedding, order, candidates_count, candidates,
+                                                       idx_count, valid_candidate_idx, ordered_constraints);
+
+                // get the candidates for next depth
+                if (idx_count[cur_depth] == 0)
+                {
+                    vec_failing_set[cur_depth - 1] = ancestors[order[cur_depth]];
+                }
+                else
+                {
+                    vec_failing_set[cur_depth - 1].reset();
+                }
+            }
+        }
+
+        cur_depth -= 1;
+
+        if (cur_depth == max_depth - 1)
+        {
+            continue;
+        }
+
+        if (cur_depth < 0)
+            break;
+        else
+        {
+            ui vq = order[cur_depth];
+            if (VN[vq].size() > 1)
+            { 
+                int add = 0;
+                for (int dd = 0; dd < VN[vq].size(); dd++)
+                {
+                    for (int kk = (idx[cur_depth]); kk < idx_count[cur_depth]; kk++)
+                    {
+                        ui valid_idxn = valid_candidate_idx[cur_depth][kk];
+                        if (valid_idxn == 10000000)
+                        {
+                            continue;
+                        }
+
+                        if (valid_idxn == VN[vq][dd])
+                        {
+                            valid_candidate_idx[cur_depth][kk] = 10000000;
+                            break;
+                        }
+                    }
+                }
+            }
+            VN[vq].clear();
+
+            VertexID u = order[cur_depth];
+            reverse_embedding.erase(embedding[u]);
+            if (cur_depth != 0)
+            {
+                if (!vec_failing_set[cur_depth].test(u))
+                {
+                    vec_failing_set[cur_depth - 1] = vec_failing_set[cur_depth];
+                    idx[cur_depth] = idx_count[cur_depth];
+                }
+                else
+                {
+                    vec_failing_set[cur_depth - 1] |= vec_failing_set[cur_depth];
+                }
+            }
+
+            visited_vertices[embedding[u]] = false;
+            embd_vertices[embedding[u]] = false;
+            counter--;
+        }
+    }
+
+    EXIT:
+    releaseBuffer(max_depth, idx, idx_count, embedding, idx_embedding, temp_buffer, valid_candidate_idx,
+                  visited_vertices,
+                  bn, bn_count);
+
+    std::priority_queue<std::pair<int, int>> maxHeap;
+    int topkcounter = 0;
+    int greedysum = 0;
+    int true_cand_sum = 0;
+    int countSol=0;
+    for (int i=0;i<data_graph->getVerticesCount();i++){
+        countSol+=nodeId[i];
+    }
+    s.Can_embed = countSol;
+    s.embedding_cnt = embedding_cnt;
+    s.candidate_true_count_sum = true_cand_sum;
+    return s;
+}
+
+enumResult
 EvaluateQuery::DIVSM(const Graph *data_graph, const Graph *query_graph,ui *&nodeId, Edges ***edge_matrix, ui **candidates,
                        ui *candidates_count, ui *order, size_t output_limit_num, size_t &call_count, int TimeL, int FairT, const std::unordered_map<VertexID, std::pair<std::set<VertexID>, std::set<VertexID>>> &ordered_constraints)
 {
@@ -8030,7 +9013,7 @@ EvaluateQuery::DIVSMSQ(const Graph *data_graph, const Graph *query_graph,ui *&no
             {
                 // VN[u] = idToValues[u][candidate];
                 VN[u] = idToValues[u][candidatesHC[u][valid_idx]];
-
+                /*    
                 if (cur_depth != 0)
                 {
                     int ia = idx[cur_depth];
@@ -8058,6 +9041,22 @@ EvaluateQuery::DIVSMSQ(const Graph *data_graph, const Graph *query_graph,ui *&no
                             io++;
                     }
                     VN[u] = VNTemp;
+                }*/
+                if (cur_depth != 0)
+                {
+                    int ia = idx[cur_depth];
+                    int io = 0;
+                   
+                        size_t write = 0;
+                        
+                        for (size_t read = 0; read < VN[u].size() && ia < idx_count[cur_depth]; ) {
+                            ui valid = valid_candidate_idx[cur_depth][ia];
+                            if (valid == 10000000) { ++ia; continue; }
+                            if (VN[u][read] == valid) VN[u][write++] = VN[u][read++], ++ia;
+                            else if (VN[u][read] > valid) ++ia;
+                            else ++read;
+                        }
+                        VN[u].resize(write);
                 }
             }
 
@@ -8068,8 +9067,33 @@ EvaluateQuery::DIVSMSQ(const Graph *data_graph, const Graph *query_graph,ui *&no
 
                 VNTemp.clear();
                 ui utemp = reverse_embedding[v];
-
-
+                if (cur_depth != max_depth - 1)
+                //if (cur_depth != max_depth - 1&&false)
+                {size_t write = 0; 
+            if (VN[u].size() > 0 && VN[utemp].size() > 0)
+            {
+                size_t ia = 0;                // iterator in VN[u]
+                size_t io = 0;                // iterator in VN[utemp] (read)
+                            // iterator in VN[utemp] (write)
+        
+                while (ia < VN[u].size() && io < VN[utemp].size())
+                {
+                    auto cu = candidates[u]     [ VN[u]     [ia] ];
+                    auto cv = candidates[utemp][ VN[utemp][io] ];
+        
+                    if (cu == cv)                               // keep
+                    {
+                        VN[utemp][write++] = VN[utemp][io];
+                        ++ia;
+                        ++io;
+                    }
+                    else if (cu < cv) ++ia;                     // advance ia
+                    else              ++io;                     // advance io
+                }
+                VN[utemp].resize(write);                          // discard tail
+            }
+        }
+                /*    
                 if (cur_depth != max_depth - 1)
                 {
                     if (VN[u].size() > 0 && VN[utemp].size() > 0)
@@ -8094,7 +9118,7 @@ EvaluateQuery::DIVSMSQ(const Graph *data_graph, const Graph *query_graph,ui *&no
                     VN[utemp] = VNTemp;
                     VNTemp.clear();
                     // break;
-                }
+                }*/
                 else
                 { // enumerate the results if it has equivalent nodes.
                     if (VN[utemp].size() > 1)
@@ -8346,7 +9370,10 @@ EvaluateQuery::DIVSMSQ(const Graph *data_graph, const Graph *query_graph,ui *&no
     int countSol=0;
     for (int i=0;i<data_graph->getVerticesCount();i++){
         countSol+=nodeId[i];
-    }
+        if(nodeId[i]==1){
+            cout<<i<<", ";
+        }
+    }cout<<endl;
     s.Can_embed = countSol;
     s.embedding_cnt = embedding_cnt;
     s.candidate_true_count_sum = true_cand_sum;
@@ -9219,7 +10246,7 @@ EvaluateQuery::DIVTOPKOPT(const Graph *data_graph, const Graph *query_graph,ui *
             {
                 // VN[u] = idToValues[u][candidate];
                 VN[u] = idToValues[u][candidatesHC[u][valid_idx]];
-
+                /*
                 if (cur_depth != 0)
                 {
                     int ia = idx[cur_depth];
@@ -9247,6 +10274,20 @@ EvaluateQuery::DIVTOPKOPT(const Graph *data_graph, const Graph *query_graph,ui *
                             io++;
                     }
                     VN[u] = VNTemp;
+                }*/
+                if (cur_depth != 0)
+                {
+                    int ia = idx[cur_depth];
+                    int io = 0;           
+                        size_t write = 0;
+                        for (size_t read = 0; read < VN[u].size() && ia < idx_count[cur_depth]; ) {
+                            ui valid = valid_candidate_idx[cur_depth][ia];
+                            if (valid == 10000000) { ++ia; continue; }
+                            if (VN[u][read] == valid) VN[u][write++] = VN[u][read++], ++ia;
+                            else if (VN[u][read] > valid) ++ia;
+                            else ++read;
+                        }
+                        VN[u].resize(write);
                 }
             }
 
@@ -9256,10 +10297,36 @@ EvaluateQuery::DIVTOPKOPT(const Graph *data_graph, const Graph *query_graph,ui *
             { // if conflict on the last level then equivalence are match.
                 VNTemp.clear();
                 ui utemp = reverse_embedding[v];
-
-
                 if (cur_depth != max_depth - 1)
+                //if (cur_depth != max_depth - 1&&false)
+                {size_t write = 0; 
+            if (VN[u].size() > 0 && VN[utemp].size() > 0)
+            {
+                size_t ia = 0;                // iterator in VN[u]
+                size_t io = 0;                // iterator in VN[utemp] (read)
+                            // iterator in VN[utemp] (write)
+        
+                while (ia < VN[u].size() && io < VN[utemp].size())
                 {
+                    auto cu = candidates[u]     [ VN[u]     [ia] ];
+                    auto cv = candidates[utemp][ VN[utemp][io] ];
+        
+                    if (cu == cv)                               // keep
+                    {
+                        VN[utemp][write++] = VN[utemp][io];
+                        ++ia;
+                        ++io;
+                    }
+                    else if (cu < cv) ++ia;                     // advance ia
+                    else              ++io;                     // advance io
+                }
+                VN[utemp].resize(write);                          // discard tail
+            }
+        }
+                /*    
+                if (cur_depth != max_depth - 1)
+                {   
+                    
                     if (VN[u].size() > 0 && VN[utemp].size() > 0)
                     {
                         int ia = 0;
@@ -9282,7 +10349,7 @@ EvaluateQuery::DIVTOPKOPT(const Graph *data_graph, const Graph *query_graph,ui *
                     VN[utemp] = VNTemp;
                     VNTemp.clear();
                     // break;
-                }
+                }*/
                 else
                 { // enumerate the results if it has equivalent nodes.
                     if (VN[utemp].size() > 1)
@@ -10181,7 +11248,7 @@ EvaluateQuery::DIVTOPKOPTSQ(const Graph *data_graph, const Graph *query_graph,ui
             {
                 // VN[u] = idToValues[u][candidate];
                 VN[u] = idToValues[u][candidatesHC[u][valid_idx]];
-
+                /*
                 if (cur_depth != 0)
                 {
                     int ia = idx[cur_depth];
@@ -10210,6 +11277,24 @@ EvaluateQuery::DIVTOPKOPTSQ(const Graph *data_graph, const Graph *query_graph,ui
                     }
                     VN[u] = VNTemp;
                 }
+                */
+               if (cur_depth != 0)
+               {
+                   int ia = idx[cur_depth];
+                   int io = 0;
+                  
+                       size_t write = 0;
+                       //size_t ia = idx[cur_depth];
+                       //size_t ia =0;
+                       for (size_t read = 0; read < VN[u].size() && ia < idx_count[cur_depth]; ) {
+                           ui valid = valid_candidate_idx[cur_depth][ia];
+                           if (valid == 10000000) { ++ia; continue; }
+                           if (VN[u][read] == valid) VN[u][write++] = VN[u][read++], ++ia;
+                           else if (VN[u][read] > valid) ++ia;
+                           else ++read;
+                       }
+                       VN[u].resize(write);
+               }
             }
 
             // set embedings found to empty for start
@@ -10218,8 +11303,33 @@ EvaluateQuery::DIVTOPKOPTSQ(const Graph *data_graph, const Graph *query_graph,ui
             { // if conflict on the last level then equivalence are match.
                 VNTemp.clear();
                 ui utemp = reverse_embedding[v];
-
-
+                if (cur_depth != max_depth - 1)
+                //if (cur_depth != max_depth - 1&&false)
+                {size_t write = 0; 
+            if (VN[u].size() > 0 && VN[utemp].size() > 0)
+            {
+                size_t ia = 0;                // iterator in VN[u]
+                size_t io = 0;                // iterator in VN[utemp] (read)
+                            // iterator in VN[utemp] (write)
+        
+                while (ia < VN[u].size() && io < VN[utemp].size())
+                {
+                    auto cu = candidates[u]     [ VN[u]     [ia] ];
+                    auto cv = candidates[utemp][ VN[utemp][io] ];
+        
+                    if (cu == cv)                               // keep
+                    {
+                        VN[utemp][write++] = VN[utemp][io];
+                        ++ia;
+                        ++io;
+                    }
+                    else if (cu < cv) ++ia;                     // advance ia
+                    else              ++io;                     // advance io
+                }
+                VN[utemp].resize(write);                          // discard tail
+            }
+        }
+                /*
                 if (cur_depth != max_depth - 1)
                 {
                     if (VN[u].size() > 0 && VN[utemp].size() > 0)
@@ -10244,7 +11354,7 @@ EvaluateQuery::DIVTOPKOPTSQ(const Graph *data_graph, const Graph *query_graph,ui
                     VN[utemp] = VNTemp;
                     VNTemp.clear();
                     // break;
-                }
+                }*/
                 else
                 { // enumerate the results if it has equivalent nodes.
                     if (VN[utemp].size() > 1)
