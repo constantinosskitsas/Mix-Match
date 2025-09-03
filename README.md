@@ -104,12 +104,12 @@ Please cite our work in your publications if it helps your research:
 ```
 @article{skitsas2025mnm,
   title={Mix \& Match: : Subgraph Matching for Absolute Coverage},
-  author={Skitsas, Konstantinos and Papageorgiou, Ioannis G and Talebi, Mohammad Sadegh and Kantere, Verena and Katehakis, Michael N and Karras, Panagiotis},
+  author={Skitsas, Konstantinos and Sasaki, Yuya and Mottin, Davide and Karras, Panagiotis},
   journal={Proceedings of the VLDB Endowment},
-  volume={16},
+  volume={19},
   number={1},
-  pages={90--98},
-  year={2022},
+  pages={--},
+  year={2025},
   publisher={VLDB Endowment}
 }
 ```

@@ -12,7 +12,6 @@ SubgraphMatchingSurvey-main/vlabel/dataset/*
 ~SubgraphMatchingSurvey-main/vlabel/build1/*
 ~SubgraphMatchingSurvey-main/vlabel/build2/*
 ~SubgraphMatchingSurvey-main/vlabel/build3/*
-.gitignore
 SubgraphMatchingSurvey-main/vlabel/build/matching/dblp.sh
 SubgraphMatchingSurvey-main/vlabel/build/matching/dblp1.sh
 SubgraphMatchingSurvey-main/vlabel/build/matching/dblp1A.sh
