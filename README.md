@@ -100,9 +100,6 @@ For detailed parameter settings, see `matching/matchingcommand.h`.
 ```zsh
 ./SubgraphMatching.out -d ../../dataset/dblp/data_graph/dblp.graph -q ../../dataset/dblp/query_graph/query_G_32_1.graph -filter RM -order RM -engine RM -num -1 -symmetry 1 -time 1 -SF Coverage
 ```
-##Datasets
-PLease find them in the link 
-https://aarhusuniversitet-my.sharepoint.com/:u:/r/personal/au647909_uni_au_dk/Documents/datasets.zip?csf=1&web=1&e=cnndCK
 
 ## Reference
 
